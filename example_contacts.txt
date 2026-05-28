@@ -1,0 +1,72 @@
+{
+  "first_name": "Olena",
+  "last_name": "Shevchenko",
+  "email": "olena.shevchenko@example.com",
+  "phone": "+380671112233",
+  "birthday": "1985-03-15",
+  "extra_info": "Подруга зі школи"
+}
+{
+  "first_name": "Andriy",
+  "last_name": "Koval",
+  "email": "andriy.koval@example.com",
+  "phone": "+380931234567",
+  "birthday": "1992-07-10",
+  "extra_info": "Футбольна команда"
+}
+{
+  "first_name": "Svitlana",
+  "last_name": "Bondar",
+  "email": "svitlana.bondar@example.com",
+  "phone": "+380501112244",
+  "birthday": "1995-12-01",
+  "extra_info": "Курс Python"
+}
+{
+  "first_name": "Mykola",
+  "last_name": "Tkachenko",
+  "email": "mykola.tkachenko@example.com",
+  "phone": "+380991234567",
+  "birthday": "1988-09-25",
+  "extra_info": "Сусід"
+}
+{
+  "first_name": "Kateryna",
+  "last_name": "Polishchuk",
+  "email": "kateryna.polishchuk@example.com",
+  "phone": "+380631234567",
+  "birthday": "1993-11-30",
+  "extra_info": "Родичка"
+}
+{
+  "first_name": "Oleh",
+  "last_name": "Marchenko",
+  "email": "oleh.marchenko@example.com",
+  "phone": "+380671234567",
+  "birthday": "1987-04-18",
+  "extra_info": "Співробітник"
+}
+{
+  "first_name": "Natalia",
+  "last_name": "Danylenko",
+  "email": "natalia.danylenko@example.com",
+  "phone": "+380931112233",
+  "birthday": "1991-02-22",
+  "extra_info": "Одногрупниця"
+}
+{
+  "first_name": "Yurii",
+  "last_name": "Melnyk",
+  "email": "yurii.melnyk@example.com",
+  "phone": "+380501234890",
+  "birthday": "1989-06-05",
+  "extra_info": "Спортзал"
+}
+{
+  "first_name": "Halyna",
+  "last_name": "Stepanenko",
+  "email": "halyna.stepanenko@example.com",
+  "phone": "+380991234890",
+  "birthday": "1994-08-12",
+  "extra_info": "Колега з проекту"
+}

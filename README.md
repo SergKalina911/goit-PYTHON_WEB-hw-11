@@ -1,6 +1,99 @@
 # goit-PYTHON_WEB-hw-11
-Homework of module 11 in PythonWEB GoIT
+Домашнє завдання №11 — Contacts REST API
 
+---
+## 📌 Опис
+REST API для управління контактами.
+Реалізовано на FastAPI, з використанням SQLAlchemy та PostgreSQL.
+Міграції виконуються через Alembic.
+Документація доступна через Swagger/Redoc.
+
+---
+
+## 📂 Структура проєкту
+
+```text
+goit-PYTHON_WEB-hw-11/
+├── alembic/                # Міграції бази даних
+│   ├── versions/           # Автогенеровані файли міграцій
+│   └── env.py              # Налаштування Alembic
+├── src/
+│   ├── database/
+│   │   ├── db.py           # Підключення до БД (engine, SessionLocal, Base)
+│   │   └── models.py       # SQLAlchemy моделі (Contact)
+│   ├── routes/
+│   │   └── contacts.py     # CRUD ендпоінти для контактів
+│   └── schemas/
+│       └── contacts.py     # Pydantic-схеми для валідації
+├── main.py                 # Точка входу FastAPI
+├── pyproject.toml          # Poetry залежності
+├── alembic.ini             # Конфіг Alembic
+├── docker-compose.yml      # Сервіси: db (Postgres), web (FastAPI)
+├── Dockerfile              # Збірка образу FastAPI
+├── example_contacts.txt    # Приклади контактів, для швидкого наповнення бази
+└── .env.example            # Змінні середовища
+
+```
+---
+## 🔑 Налаштування .env
+
+У репозиторії є файл `.env.example`.  
+Він показує, які змінні середовища потрібні для роботи проєкту, але містить лише **шаблонні значення**.
+
+### Що треба зробити:
+1. Скопіювати `.env.example` → створити власний файл `.env` у корені проєкту.
+2. Замінити значення `POSTGRES_PASSWORD` на свій реальний пароль.
+3. Переконатися, що `POSTGRES_HOST=db` (це ім’я сервісу з `docker-compose.yml`).
+---
+
+## 🚀 Запуск
+```bash
+    docker compose up -d --build
+    docker compose logs web --tail=50
+
+```
+---
+## 📖 Документація API
+
+Swagger UI → http://localhost:8000/docs
+
+Redoc → http://localhost:8000/redoc
+
+---
+
+## ✨ Реалізований функціонал
+```text
+1. CRUD для контактів:
+
+- POST /contacts — створити контакт
+
+- GET /contacts — отримати список
+
+- GET /contacts/{id} — отримати за ID
+
+- PUT /contacts/{id} — оновити
+
+- DELETE /contacts/{id} — видалити
+
+2. Пошук за ім’ям, прізвищем або email (Query params)
+
+3. Дні народження на найближчі 7 днів (GET /contacts/upcoming_birthdays)
+```
+---
+## 📦 Приклади для швидкого наповнення бази можна скопіювати у файлі example_contacts.txt
+---
+## 🗄️ SQL у DBeaver
+```Sql
+-- Показати всі контакти
+SELECT * FROM contacts;
+
+-- Видалити контакт
+DELETE FROM contacts WHERE id = 1;
+
+-- Оновити email
+UPDATE contacts SET email = 'new@example.com' WHERE id = 4;
+
+```
 ---
 
 ## Оригінал завдання
@@ -37,6 +130,4 @@ API повинен мати можливість виконувати насту
 5.	Підтримка зберігання дати народження контакту
 6.	Надання документів для API
 7.	Використання модуля перевірки достовірності даних Pydantic
-
-
 ---
