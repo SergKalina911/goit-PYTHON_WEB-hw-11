@@ -14,6 +14,15 @@ def create_contact(contact: schemas.ContactCreate, db: Session = Depends(get_db)
 def read_contacts(db: Session = Depends(get_db)):
     return repository.get_contacts(db)
 
+@router.get("/search/")
+def search_contacts(query: str, db: Session = Depends(get_db)):
+    return repository.search_contacts(db, query)
+
+@router.get("/birthdays/")
+def upcoming_birthdays(db: Session = Depends(get_db)):
+    return repository.upcoming_birthdays(db)
+
+
 @router.get("/{contact_id}", response_model=schemas.Contact)
 def read_contact(contact_id: int, db: Session = Depends(get_db)):
     contact = repository.get_contact(db, contact_id)
@@ -35,10 +44,3 @@ def delete_contact(contact_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Contact not found")
     return {"detail": "Contact deleted"}
 
-@router.get("/search/")
-def search_contacts(query: str, db: Session = Depends(get_db)):
-    return repository.search_contacts(db, query)
-
-@router.get("/birthdays/")
-def upcoming_birthdays(db: Session = Depends(get_db)):
-    return repository.upcoming_birthdays(db)
