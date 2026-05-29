@@ -42,6 +42,20 @@ def search_contacts(db: Session, query: str):
 def upcoming_birthdays(db: Session):
     today = date.today()
     next_week = today + timedelta(days=7)
-    return db.query(models.Contact).filter(
-        models.Contact.birthday.between(today, next_week)
-    ).all()
+
+    contacts = db.query(models.Contact).all()
+    result = []
+
+    for contact in contacts:
+        if contact.birthday:
+            try:
+                # Беремо лише день і місяць, рік замінюємо на поточний
+                birthday_this_year = contact.birthday.replace(year=today.year)
+            except ValueError:
+                # Якщо день народження 29 лютого, а рік не високосний — пропускаємо
+                continue
+
+            if today <= birthday_this_year <= next_week:
+                result.append(contact)
+
+    return result
