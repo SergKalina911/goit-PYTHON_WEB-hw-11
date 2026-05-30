@@ -1,0 +1,50 @@
+{
+  "username": "serg",
+  "email": "serg@example.com",
+  "password": "mypassword"
+}
+{
+  "username": "olena",
+  "email": "olena@example.com",
+  "password": "secret123"
+}
+{
+  "username": "andriy",
+  "email": "andriy@example.com",
+  "password": "pass456"
+}
+{
+  "username": "svitlana",
+  "email": "svitlana@example.com",
+  "password": "qwerty78"
+}
+{
+  "username": "mykola",
+  "email": "mykola@example.com",
+  "password": "kolya2026"
+}
+{
+  "username": "kateryna",
+  "email": "kateryna@example.com",
+  "password": "kitty321"
+}
+{
+  "username": "oleh",
+  "email": "oleh@example.com",
+  "password": "olehpass"
+}
+{
+  "username": "natalia",
+  "email": "natalia@example.com",
+  "password": "natpass"
+}
+{
+  "username": "yurii",
+  "email": "yurii@example.com",
+  "password": "yura123"
+}
+{
+  "username": "halyna",
+  "email": "halyna@example.com",
+  "password": "halyna456"
+}
