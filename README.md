@@ -13,7 +13,7 @@ REST API для управління контактами з механізмо�
 
 ---
 
-## 📂 Структура проєкту
+## 📂 Структура проекту
 
 ```text
 goit-PYTHON_WEB-hw-11/
@@ -53,13 +53,65 @@ goit-PYTHON_WEB-hw-11/
 1. Скопіювати `.env.example` → створити власний файл `.env` у корені проєкту.
 2. Замінити значення `POSTGRES_PASSWORD` на свій реальний пароль.
 3. Переконатися, що `POSTGRES_HOST=db` (це ім’я сервісу з `docker-compose.yml`).
+
+🔹 Важливий нюанс: POSTGRES_HOST
+У Docker: треба залишати POSTGRES_HOST=db, бо це ім’я сервісу з docker-compose.yml.
+
+Поза Docker (наприклад, для Alembic‑міграцій з Windows): треба міняти на POSTGRES_HOST=localhost, бо ззовні контейнера база доступна через localhost:5432.
+
+📂 Приклад .env.local (для міграцій з Windows)
+```env
+POSTGRES_DB=contacts_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=mysecretpassword
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+
+DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5432/contacts_db
+```
+
+📂 Приклад .env.docker (для запуску в контейнері)
+```env
+POSTGRES_DB=contacts_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=mysecretpassword
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+
+DATABASE_URL=postgresql://postgres:mysecretpassword@db:5432/contacts_db
+```
+🔄 Як швидко перемикати
+
+- Для міграцій:
+```bash
+cp .env.local .env
+alembic revision --autogenerate -m "init"
+alembic upgrade head
+```
+- Для Docker:
+```bash
+cp .env.local .env
+alembic revision --autogenerate -m "init"
+alembic upgrade head
+```
 ---
 
-## 🚀 Запуск
+## 🚀 Повний робочий цикл
+1. Створити .env на основі .env.example.
+2. Запустити Docker: 
 ```bash
-    docker compose up -d --build
-    docker compose logs web --tail=50
-
+    ddocker compose up --build
+```
+3. Виконати міграції (якщо треба з Windows‑хоста):
+```bash
+cp .env.local .env
+alembic revision --autogenerate -m "init"
+alembic upgrade head
+```
+4. Повернути .env.docker для роботи контейнерів:
+```bash
+cp .env.docker .env
+docker compose up
 ```
 ---
 ## 📖 Документація API
