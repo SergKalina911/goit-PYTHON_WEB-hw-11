@@ -21,3 +21,11 @@ async def update_token(user: User, token: str | None, db: Session) -> None:
     """ Оновлення токена користувача. """
     user.refresh_token = token
     db.commit()
+
+async def confirmed_email(email: str, db: Session) -> None:
+    """ Підтвердження email користувача. """
+    user = await get_user_by_email(email, db)
+    if user:   # ✅ перевірка
+        user.confirmed = True
+        db.commit()
+    

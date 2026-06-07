@@ -1,26 +1,61 @@
+# services:
+#   db:
+#     image: postgres:15
+#     container_name: contacts_postgres
+#     restart: always
+#     environment:
+#       POSTGRES_DB: contacts_db
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: mysecretpassword
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+
+#   web:
+#     build: .
+#     container_name: contacts_api
+#     restart: always
+#     env_file: .env
+#     ports:
+#       - "8000:8000"
+#     depends_on:
+#       - db
+
+# volumes:
+#   postgres_data:
 services:
   db:
     image: postgres:15
     container_name: contacts_postgres
     restart: always
-    environment:
-      POSTGRES_DB: contacts_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
+    env_file: .env   # ✅ беремо всі змінні з .env
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  redis:
+    image: redis:7
+    container_name: contacts_redis
+    restart: always
+    env_file: .env
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data   # ✅ тепер дані Redis зберігаються у томі
   web:
     build: .
     container_name: contacts_api
     restart: always
-    env_file: .env
+    env_file: .env   # ✅ всі крендишали з .env
     ports:
       - "8000:8000"
     depends_on:
       - db
+      - redis
 
 volumes:
   postgres_data:
+  redis_data:
+

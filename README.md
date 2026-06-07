@@ -1,15 +1,25 @@
 # goit-PYTHON_WEB-hw-11
-Домашнє завдання №11,12 — Contacts REST API з JWT
+Домашнє завдання №11,12,13 — Contacts REST API з JWT
 
 ---
 ## 📌 Опис
+REST API для роботи з контактами та користувачами. Реалізовано:
+- Реєстрація та підтвердження email
+- Авторизація з JWT токенами (access/refresh)
+- Скидання паролю через email‑токен
+- Кешування поточного користувача у Redis
+- Документація доступна у Swagger UI (`/docs`)
 
-REST API для управління контактами з механізмом аутентифікації та авторизації.
-Реалізовано на FastAPI, з використанням SQLAlchemy, PostgreSQL, JWT.
-Міграції виконуються через Alembic.
-Документація доступна через Swagger/Redoc.
-Користувачі можуть виконувати CRUD‑операції лише після входу в систему.
-Кожен користувач має доступ тільки до своїх контактів.
+---
+
+## ⚙️ Технології
+- **Python 3.13**
+- **FastAPI**
+- **SQLAlchemy + PostgreSQL**
+- **Alembic** (міграції)
+- **Redis** (кешування користувача)
+- **Docker + docker-compose**
+- **Poetry** (керування залежностями)
 
 ---
 
@@ -25,22 +35,26 @@ goit-PYTHON_WEB-hw-11/
 │   │   ├── db.py           # Підключення до БД (engine, SessionLocal, Base)
 │   │   └── models.py       # SQLAlchemy моделі (Contact, User)
 │   ├── routes/
-│   │   ├── auth.py         # signup, login, refresh_token
-│   │   └── contacts.py     # CRUD ендпоінти (авторизація)
-│   ├─ schemas.py           # Pydantic-схеми для валідації
+│   │   ├── auth.py         # signup, login, refresh_token, reset-password
+│   │   ├── users.py        # CRUD для користувачів
+│   │   └── contacts.py     # CRUD ендпоінти для контактів (з user_id)
+│   ├── schemas.py          # Pydantic-схеми для валідації
 │   ├── repository/
-│   │   ├── users.py        # робота з користувачами
-│   │   └── contacts.py     # CRUD для контактів (з user_id)     
+│   │   ├── users.py        # Робота з користувачами
+│   │   └── contacts.py     # CRUD для контактів
 │   ├── services/
-│       └── auth.py         # Auth клас (JWT, bcrypt)
+│   │   ├── templates/      # Шаблони листів (HTML)
+│   │   ├── cache.py        # Кешування користувача у Redis
+│   │   ├── email.py        # Відправка email (SMTP)
+│   │   └── auth.py         # Auth‑сервіс (JWT, bcrypt)
 ├── main.py                 # Точка входу FastAPI, підключення роутів
 ├── pyproject.toml          # Poetry залежності
 ├── alembic.ini             # Конфіг Alembic
-├── docker-compose.yml      # Сервіси: db (Postgres), web (FastAPI)
+├── docker-compose.yml      # Сервіси: db (Postgres), web (FastAPI), redis
 ├── Dockerfile              # Збірка образу FastAPI
-├── example_contacts.txt    # Приклади контактів, для швидкого наповнення бази
-├── example_users.txt       # Приклади користувачив
-└── .env.example            # Змінні середовища
+├── example_contacts.txt    # Приклади контактів для тесту
+├── example_users.txt       # Приклади користувачів для тесту
+└── .env.example            # Змінні середовища (приклад)
 
 ```
 ---
@@ -51,7 +65,7 @@ goit-PYTHON_WEB-hw-11/
 
 ### Що треба зробити:
 1. Скопіювати `.env.example` → створити власний файл `.env` у корені проєкту.
-2. Замінити значення `POSTGRES_PASSWORD` на свій реальний пароль.
+2. Замінити значення власними
 3. Переконатися, що `POSTGRES_HOST=db` (це ім’я сервісу з `docker-compose.yml`).
 
 🔹 Важливий нюанс: POSTGRES_HOST
@@ -59,41 +73,6 @@ goit-PYTHON_WEB-hw-11/
 
 Поза Docker (наприклад, для Alembic‑міграцій з Windows): треба міняти на POSTGRES_HOST=localhost, бо ззовні контейнера база доступна через localhost:5432.
 
-📂 Приклад .env.local (для міграцій з Windows)
-```env
-POSTGRES_DB=contacts_db
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=mysecretpassword
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-
-DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5432/contacts_db
-```
-
-📂 Приклад .env.docker (для запуску в контейнері)
-```env
-POSTGRES_DB=contacts_db
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=mysecretpassword
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-
-DATABASE_URL=postgresql://postgres:mysecretpassword@db:5432/contacts_db
-```
-🔄 Як швидко перемикати
-
-- Для міграцій:
-```bash
-cp .env.local .env
-alembic revision --autogenerate -m "init"
-alembic upgrade head
-```
-- Для Docker:
-```bash
-cp .env.local .env
-alembic revision --autogenerate -m "init"
-alembic upgrade head
-```
 ---
 
 ## 🚀 Повний робочий цикл
@@ -121,7 +100,18 @@ Swagger UI → http://localhost:8000/docs
 Redoc → http://localhost:8000/redoc
 
 ---
+## 🔑 Авторизація
+POST /api/auth/signup — реєстрація
 
+POST /api/auth/login — логін, повертає access_token та refresh_token
+
+GET /api/auth/refresh_token — оновлення токенів
+
+POST /api/auth/reset-password-request — запит на скидання паролю
+
+POST /api/auth/reset-password/{token} — скидання паролю
+
+---
 ## ✨ Реалізований функціонал
 ```text
 1. CRUD для контактів(доступні лише авторизованим користувачам):
@@ -149,7 +139,16 @@ Redoc → http://localhost:8000/redoc
 ---
 ## 📦 Приклади для швидкого наповнення бази можна скопіювати у файлі example_contacts.txt, example_users.txt
 ---
+## 🗄️ Кешування користувача
+При успішному логіні або оновленні токенів користувач зберігається у Redis:
 
+Ключ: user:<id>
+
+Значення: JSON із даними користувача та токенами
+
+TTL: 3600 секунд (1 година)
+
+---
 ## 📊 Таблиця ендпоінтів
 ```text
 | Маршрут                     | Метод  | Статус       | Опис                                                           |
@@ -221,4 +220,25 @@ API повинен мати можливість виконувати насту
 - При операції POST - аутентифікація користувача, сервер приймає запит із даними користувача (email, пароль) у тілі запиту;
 - Якщо користувач не існує або пароль не збігається, повертається помилка HTTP 401 Unauthorized;
 - механізм авторизації за допомогою JWT токенів реалізований парою токенів: токена доступу access_token і токен оновлення refresh_token
+
+### Домашнє завдання #13
+
+У цьому домашньому завданні ми продовжуємо доопрацьовувати застосунок REST API із домашнього завдання 12.
+
+#### Завдання
+
+- Реалізуйте механізм верифікації електронної пошти зареєстрованого користувача;
+- Обмежуйте кількість запитів до своїх маршрутів контактів. Обов’язково обмежте швидкість - створення контактів    для користувача;
+- Увімкніть CORS для свого REST API;
+- Реалізуйте можливість оновлення аватара користувача. Використовуйте сервіс Cloudinary;
+
+#### Загальні вимоги
+
+- Усі змінні середовища повинні зберігатися у файлі .env. Всередині коду не повинно бути конфіденційних даних у «чистому» вигляді;
+- Для запуску всіх сервісів і баз даних у застосунку використовується Docker Compose;
+
+#### Додаткове завдання
+
+- Реалізуйте механізм кешування за допомогою бази даних Redis. Виконайте кешування поточного користувача під час авторизації;
+- Реалізуйте механізм скидання паролю для застосунку REST API;
 ---
