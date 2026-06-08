@@ -49,7 +49,20 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
 @router.post("/login", response_model=TokenModel)
 async def login(body: UserLogin, db: Session = Depends(get_db)):
     """ Логін користувача """
+
+    # ✅ спочатку пробуємо взяти користувача з кешу по id
     user = await repository_users.get_user_by_email(body.email, db)
+    if user:
+        cached_user = get_cached_user(user.id)
+        if cached_user and auth_service.verify_password(body.password, user.password):
+            print(f"⚡ Використано кеш для {body.email}")  # 🔎 тестовий print
+            return {
+                "access_token": cached_user["access_token"],
+                "refresh_token": cached_user["refresh_token"],
+                "token_type": "bearer"
+            }
+
+    # якщо немає в кеші — перевіряємо користувача у БД
     if user is None or not auth_service.verify_password(body.password, user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     if not user.confirmed:
@@ -58,8 +71,8 @@ async def login(body: UserLogin, db: Session = Depends(get_db)):
     access_token = await auth_service.create_access_token({"sub": user.email})
     refresh_token = await auth_service.create_refresh_token({"sub": user.email})
     await repository_users.update_token(user, refresh_token, db)
-
-    # ✅ кешуємо користувача після успішного логіну
+    
+    # ✅ кешуємо користувача після успішного логіну (передаємо об’єкт user)
     cache_user(user, access_token, refresh_token)
 
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
@@ -71,7 +84,7 @@ async def refresh_token(user=Depends(auth_service.get_current_user), db: Session
     refresh_token = await auth_service.create_refresh_token({"sub": user.email})
     await repository_users.update_token(user, refresh_token, db)
 
-    # ✅ оновлюємо кеш
+    # ✅ оновлюємо кеш (передаємо об’єкт user)
     cache_user(user, access_token, refresh_token)
 
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
