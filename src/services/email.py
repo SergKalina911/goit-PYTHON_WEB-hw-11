@@ -27,11 +27,27 @@ conf = ConnectionConfig(
     TEMPLATE_FOLDER=Path(__file__).parent / 'templates',
 )
 
-async def send_verification_email(email: EmailStr, username: str, host: str, token: str):
-    """ Відправка листа з підтвердженням реєстрації. Ця функція формує лист з посиланням для
+async def send_verification_email(email: EmailStr, username: str, host: str, token: str) -> None:
+    """
+    Відправка листа з підтвердженням реєстрації. Ця функція формує лист з посиланням для
     підтвердження реєстрації, яке містить JWT-токен для підтвердження email-адреси користувача.
     Лист відправляється на вказану email-адресу користувача. У разі виникнення помилок при 
-    підключенні до поштового сервера, помилки будуть виведені у консоль для подальшого аналізу."""
+    підключенні до поштового сервера, помилки будуть виведені у консоль для подальшого аналізу.
+    
+    
+    :param email: адреса електронної пошти користувача, на яку буде відправлено лист.
+    :type email: EmailStr
+    :param username: ім'я користувача, яке буде включено у вміст листа для персоналізації повідомлення.
+    :type username: str
+    :param host: базовий URL сервера, який буде використаний для формування посилання для підтвердження
+                реєстрації.
+    :type host: str
+    :param token: JWT-токен, який буде включений у посилання для підтвердження реєстрації, що дозволить
+                користувачу підтвердити свою email-адресу.
+    :type token: str
+    :return: None
+    :rtype: None
+    """
     try:
         message = MessageSchema(
             subject="Confirm your email",
@@ -44,11 +60,24 @@ async def send_verification_email(email: EmailStr, username: str, host: str, tok
     except ConnectionErrors as err:
         print(err)
 
-async def send_reset_password_email(email: EmailStr, host: str, token: str):
-    """ Відправка листа для скидання пароля. Ця функція формує лист з посиланням для скидання
+async def send_reset_password_email(email: EmailStr, host: str, token: str) -> None:
+    """
+    Відправка листа для скидання пароля. Ця функція формує лист з посиланням для скидання
     пароля, яке містить JWT-токен для підтвердження права на скидання пароля. Лист відправляється
     на вказану email-адресу користувача. У разі виникнення помилок при підключенні до поштового
-    сервера, помилки будуть виведені у консоль для подальшого аналізу.    """
+    сервера, помилки будуть виведені у консоль для подальшого аналізу.
+    
+    :param email: адреса електронної пошти користувача, на яку буде відправлено лист.
+    :type email: EmailStr 
+    :param host: базовий URL сервера, який буде використаний для формування посилання для
+                скидання пароля.
+    :type host: str
+    :param token:JWT-токен, який буде включений у посилання для скидання пароля, що дозволить
+                користувачу підтвердити право на скидання пароля.
+    :type token: str
+    :return: None
+    :rtype: None
+    """
     try:
         reset_link = f"{host}api/auth/reset-password/{token}"
         message = MessageSchema(

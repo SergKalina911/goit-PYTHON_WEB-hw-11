@@ -16,8 +16,20 @@ cloudinary.config(
 )
 
 @router.post("/avatar")
-async def upload_avatar(file: UploadFile, db: Session = Depends(get_db), user=Depends(auth_service.get_current_user)):
-    """ Завантаження аватара користувача на Cloudinary та оновлення URL в базі даних. """
+async def upload_avatar(file: UploadFile, db: Session = Depends(get_db),
+                        user=Depends(auth_service.get_current_user)) -> dict:
+    """
+    Завантаження аватара користувача на Cloudinary та оновлення URL в базі даних.
+    
+    :param file: Файл аватара для завантаження.
+    :type file: UploadFile
+    :param db: Сесія бази даних.
+    :type db: Session
+    :param user: Поточний авторизований користувач.
+    :type user: User
+    :return: Словник з URL аватара.
+    :rtype: dict
+    """
     try:
         result = cloudinary.uploader.upload(file.file, folder="avatars")
         user.avatar = result["secure_url"]

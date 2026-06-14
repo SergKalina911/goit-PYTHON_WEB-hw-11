@@ -19,9 +19,14 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-def get_db():
-    """ Функція для отримання сесії бази даних. Використовується як залежність у маршрутах для
-    забезпечення доступу до бази даних. """
+def get_db() -> SessionLocal:
+    """
+    Функція для отримання сесії бази даних. Використовується як залежність у маршрутах для
+    забезпечення доступу до бази даних.
+    
+    :return: Сесія бази даних
+    :rtype: SessionLocal
+    """
     db = SessionLocal()
     try:
         yield db

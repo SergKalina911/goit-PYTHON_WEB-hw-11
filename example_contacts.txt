@@ -43,7 +43,7 @@
   "last_name": "Marchenko",
   "email": "oleh.marchenko@example.com",
   "phone": "+380671234567",
-  "birthday": "1987-04-18",
+  "birthday": "1987-06-18",
   "extra_info": "Співробітник"
 }
 {

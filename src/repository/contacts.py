@@ -8,20 +8,51 @@ from datetime import date, timedelta
 from src.database import models
 from src import schemas
 
-def get_contacts(db: Session, user: models.User):
-    """ Отримати всі контакти поточного користувача. """
+async def get_contacts(db: Session, user: models.User) -> list[models.Contact]:
+    """
+    Отримати всі контакти поточного користувача.
+    
+    :param db: Сесія бази даних
+    :type db: Session
+    :param user: Поточний користувач
+    :type user: models.User
+    :return: Список контактів користувача
+    :rtype: list[models.Contact]
+    """
     return db.query(models.Contact).filter(models.Contact.user_id == user.id).all()
 
-def get_contact(db: Session, contact_id: int, user: models.User):
-    """ Отримати контакт за ID, якщо він належить поточному користувачу. """
+async def get_contact(db: Session, contact_id: int, user: models.User) -> models.Contact | None:
+    """
+    Отримати контакт за ID, якщо він належить поточному користувачу.
+    
+    :param db: Сесія бази даних
+    :type db: Session
+    :param contact_id: ID контакту
+    :type contact_id: int
+    :param user: Поточний користувач
+    :type user: models.User
+    :return: Контакт або None
+    :rtype: models.Contact | None
+    """
     # шукаємо контакт за ID, але тільки серед контактів користувача
     return db.query(models.Contact).filter(
         models.Contact.id == contact_id,
         models.Contact.user_id == user.id
     ).first()
 
-def create_contact(db: Session, contact: schemas.ContactCreate, user: models.User):
-    """ Створити новий контакт для поточного користувача. """
+async def create_contact(db: Session, contact: schemas.ContactCreate, user: models.User) -> models.Contact:
+    """
+    Створити новий контакт для поточного користувача.
+    
+    :param db: Сесія бази даних
+    :type db: Session
+    :param contact: Дані для створення контакту
+    :type contact: schemas.ContactCreate
+    :param user: Поточний користувач
+    :type user: models.User
+    :return: Створений контакт
+    :rtype: models.Contact
+    """
     # створюємо контакт і додаємо user_id
     db_contact = models.Contact(**contact.dict(), user_id=user.id)
     db.add(db_contact)
@@ -29,9 +60,22 @@ def create_contact(db: Session, contact: schemas.ContactCreate, user: models.Use
     db.refresh(db_contact)
     return db_contact
 
-def update_contact(db: Session, contact_id: int, contact: schemas.ContactUpdate, user: models.User):
-    """ Оновити існуючий контакт для поточного користувача. """
-    db_contact = get_contact(db, contact_id, user)
+async def update_contact(db: Session, contact_id: int, contact: schemas.ContactUpdate, user: models.User) -> models.Contact | None:
+    """
+    Оновити існуючий контакт для поточного користувача.
+    
+    :param db: Сесія бази даних
+    :type db: Session
+    :param contact_id: ID контакту
+    :type contact_id: int
+    :param contact: Дані для оновлення контакту
+    :type contact: schemas.ContactUpdate
+    :param user: Поточний користувач
+    :type user: models.User
+    :return: Оновлений контакт або None
+    :rtype: models.Contact | None
+    """
+    db_contact = await get_contact(db, contact_id, user)
     if db_contact:
         for key, value in contact.dict().items():
             setattr(db_contact, key, value)
@@ -39,16 +83,38 @@ def update_contact(db: Session, contact_id: int, contact: schemas.ContactUpdate,
         db.refresh(db_contact)
     return db_contact
 
-def delete_contact(db: Session, contact_id: int, user: models.User):
-    """ Видалити контакт для поточного користувача. """
-    db_contact = get_contact(db, contact_id, user)
+async def delete_contact(db: Session, contact_id: int, user: models.User) -> models.Contact | None:
+    """
+    Видалити контакт для поточного користувача.
+    
+    :param db: Сесія бази даних
+    :type db: Session
+    :param contact_id: ID контакту
+    :type contact_id: int
+    :param user: Поточний користувач
+    :type user: models.User
+    :return: Видалений контакт або None
+    :rtype: models.Contact | None
+    """
+    db_contact = await get_contact(db, contact_id, user)
     if db_contact:
         db.delete(db_contact)
         db.commit()
     return db_contact
 
-def search_contacts(db: Session, query: str, user: models.User):
-    """ Пошук контактів за певним запитом для поточного користувача. """
+async def search_contacts(db: Session, query: str, user: models.User) -> list[models.Contact]:
+    """
+    Пошук контактів за певним запитом для поточного користувача.
+    
+    :param db: Сесія бази даних
+    :type db: Session
+    :param query: Запит для пошуку
+    :type query: str
+    :param user: Поточний користувач
+    :type user: models.User
+    :return: Список знайдених контактів
+    :rtype: list[models.Contact]
+    """
     # пошук лише серед контактів користувача
     return db.query(models.Contact).filter(
         models.Contact.user_id == user.id,
@@ -59,8 +125,17 @@ def search_contacts(db: Session, query: str, user: models.User):
         )
     ).all()
 
-def upcoming_birthdays(db: Session, user: models.User):
-    """ Отримати контакти з майбутніми днями народженнями для поточного користувача. """
+async def upcoming_birthdays(db: Session, user: models.User) -> list[models.Contact]:
+    """
+    Отримати контакти з майбутніми днями народженнями для поточного користувача.
+
+    :param db: Сесія бази даних
+    :type db: Session
+    :param user: Поточний користувач
+    :type user: models.User
+    :return: Список контактів з майбутніми днями народженнями
+    :rtype: list[models.Contact]
+    """
     today = date.today()
     next_week = today + timedelta(days=7)
 

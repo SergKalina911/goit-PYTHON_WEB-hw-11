@@ -14,11 +14,20 @@ redis_client = redis.Redis(
     decode_responses=True
 )
 
-def cache_user(user, access_token: str, refresh_token: str):
+def cache_user(user, access_token: str, refresh_token: str) -> None:
     """
     Зберігає дані користувача у Redis.
     Ключ: user:<id>
     Значення: JSON з email, username, confirmed, токенами.
+    
+    :param user: Об'єкт користувача, який містить інформацію про користувача.
+    :type user: repository_users.User
+    :param access_token: JWT-токен для доступу.
+    :type access_token: str
+    :param refresh_token: JWT-токен для оновлення access token.
+    :type refresh_token: str
+    :return: None
+    :rtype: None
     """
     key = f"user:{user.id}"
     redis_client.set(key, json.dumps({
@@ -30,9 +39,14 @@ def cache_user(user, access_token: str, refresh_token: str):
         "refresh_token": refresh_token
     }), ex=3600)  # кеш на 1 годину
 
-def get_cached_user(user_id: int):
+def get_cached_user(user_id: int) -> dict | None:
     """
     Отримує дані користувача з Redis.
+    
+    :param user_id: ID користувача для отримання даних.
+    :type user_id: int
+    :return: Дані користувача або None.
+    :rtype: dict or None
     """
     key = f"user:{user_id}"
     data = redis_client.get(key)

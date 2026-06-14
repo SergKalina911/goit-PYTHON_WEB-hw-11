@@ -22,8 +22,21 @@ from src.services.cache import cache_user, get_cached_user   # ✅ кеш
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Request, db: Session = Depends(get_db)):
-    """ Реєстрація нового користувача """
+async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Request, db: Session = Depends(get_db)) -> dict:
+    """ 
+    Реєстрація нового користувача.
+    
+    param body: дані для реєстрації (email, username, password)
+    type body: UserModel
+    param background_tasks: для відправки листа у фоновому режимі
+    type background_tasks: BackgroundTasks
+    param request: об'єкт запиту
+    type request: Request
+    param db: сесія бази даних
+    type db: Session
+    return: словник з даними нового користувача та повідомленням про успішну реєстрацію
+    rtype: dict
+    """
     exist_user = await repository_users.get_user_by_email(body.email, db)
     if exist_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Account already exists")
@@ -36,8 +49,17 @@ async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Re
     return {"user": new_user, "detail": "User successfully created. Check your email for confirmation."}
 
 @router.get("/confirmed_email/{token}")
-async def confirmed_email(token: str, db: Session = Depends(get_db)):
-    """ Підтвердження користувача через email """
+async def confirmed_email(token: str, db: Session = Depends(get_db)) -> dict:
+    """ 
+    Підтвердження користувача через email.
+    
+    param token: токен з посилання для підтвердження email
+    type token: str
+    param db: сесія бази даних
+    type db: Session
+    return: словник повідомлення про результат підтвердження
+    rtype: dict
+    """
     email = auth_service.decode_email_token(token)
     user = await repository_users.get_user_by_email(email, db)
     if not user:
@@ -47,8 +69,17 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
     return {"message": "Email confirmed successfully"}
 
 @router.post("/login", response_model=TokenModel)
-async def login(body: UserLogin, db: Session = Depends(get_db)):
-    """ Логін користувача """
+async def login(body: UserLogin, db: Session = Depends(get_db)) -> dict:
+    """ 
+    Логін користувача.
+    
+    param body: дані для входу (email, password)
+    type body: UserLogin
+    param db: сесія бази даних
+    type db: Session
+    return: словник з токенами для авторизації
+    rtype: dict
+    """
 
     # ✅ спочатку пробуємо взяти користувача з кешу по id
     user = await repository_users.get_user_by_email(body.email, db)
@@ -77,9 +108,34 @@ async def login(body: UserLogin, db: Session = Depends(get_db)):
 
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
+# ... signup, confirmed_email, login, refresh_token, reset-password ...
+
+@router.get("/check")
+async def check_auth(user=Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+    """
+    Перевірка авторизації користувача.
+    
+    param user: поточний користувач, отриманий через токен
+    type user: UserResponse
+    param db: сесія бази даних
+    type db: Session
+    return: словник з повідомленням про успішну авторизацію
+    rtype: dict
+    """
+    return {"message": "Authorization successful", "email": user.email}
+
 @router.get("/refresh_token", response_model=TokenModel)
-async def refresh_token(user=Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
-    """ Оновлення токенів для авторизованого користувача """
+async def refresh_token(user=Depends(auth_service.get_current_user), db: Session = Depends(get_db)) -> dict:
+    """
+    Оновлення токенів для авторизованого користувача.
+    
+    param user: поточний користувач, отриманий через Depends
+    type user: UserResponse
+    param db: сесія бази даних
+    type db: Session
+    return: словник з оновленими токенами
+    rtype: dict
+    """
     access_token = await auth_service.create_access_token({"sub": user.email})
     refresh_token = await auth_service.create_refresh_token({"sub": user.email})
     await repository_users.update_token(user, refresh_token, db)
@@ -90,8 +146,18 @@ async def refresh_token(user=Depends(auth_service.get_current_user), db: Session
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
 @router.post("/reset-password-request")
-async def reset_password_request(body: ResetPasswordRequest, request: Request, db: Session = Depends(get_db)):
-    """ Запит на скидання паролю """
+async def reset_password_request(body: ResetPasswordRequest, request: Request, db: Session = Depends(get_db)) -> dict:
+    """ Запит на скидання паролю.
+    
+    param body: дані для запиту (email)
+    type body: ResetPasswordRequest
+    param request: об'єкт запиту
+    type request: Request
+    param db: сесія бази даних
+    type db: Session
+    return: словник з повідомленням
+    rtype: dict
+    """
     user = await repository_users.get_user_by_email(body.email, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -100,8 +166,18 @@ async def reset_password_request(body: ResetPasswordRequest, request: Request, d
     return {"message": "Password reset email sent"}
 
 @router.post("/reset-password/{token}")
-async def reset_password(token: str, body: ResetPasswordConfirm, db: Session = Depends(get_db)):
-    """ Скидання паролю за токеном, отриманим з email """
+async def reset_password(token: str, body: ResetPasswordConfirm, db: Session = Depends(get_db)) -> dict:
+    """ Скидання паролю за токеном, отриманим з email.
+    
+    param token: токен для скидання паролю
+    type token: str
+    param body: дані для скидання паролю
+    type body: ResetPasswordConfirm
+    param db: сесія бази даних
+    type db: Session
+    return: словник з повідомленням
+    rtype: dict
+    """
     email = auth_service.decode_reset_token(token)
     if not email:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired token")
