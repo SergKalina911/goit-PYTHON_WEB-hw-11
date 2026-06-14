@@ -8,10 +8,13 @@ async def get_user_by_email(email: str, db: Session) -> User:
     
     :param email: Email користувача
     :type email: str
+    
     :param db: Сесія бази даних
     :type db: Session
+    
     :return: Користувач або None
-    :rtype: User | None
+    :rtype: src.database.models.User | None
+    
     """
     return db.query(User).filter(User.email == email).first()
 
@@ -20,10 +23,13 @@ async def create_user(body: UserModel, db: Session) -> User:
     
     :param body: Дані для створення користувача
     :type body: UserModel
+    
     :param db: Сесія бази даних
     :type db: Session
+    
     :return: Створений користувач
-    :rtype: User
+    :rtype: src.database.models.User
+    
     """
     new_user = User(**body.dict())
     db.add(new_user)
@@ -36,10 +42,13 @@ async def update_token(user: User, token: str | None, db: Session) -> None:
     
     :param user: Користувач
     :type user: User
+    
     :param token: Новий токен
     :type token: str | None
+    
     :param db: Сесія бази даних
     :type db: Session
+    
     """
     user.refresh_token = token
     db.commit()
@@ -49,8 +58,10 @@ async def confirmed_email(email: str, db: Session) -> None:
     
     :param email: Email користувача
     :type email: str
+    
     :param db: Сесія бази даних
     :type db: Session
+    
     """
     user = await get_user_by_email(email, db)
     if user:   # ✅ перевірка

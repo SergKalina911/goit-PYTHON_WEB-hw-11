@@ -11,16 +11,22 @@ class ContactBase(BaseModel):
     
     :param first_name: ім'я контакту, яке є обов'язковим полем.
     :type first_name: str
+    
     :param last_name: прізвище контакту, яке є обов'язковим полем.
     :type last_name: str
+    
     :param email: адреса електронної пошти контакту, яка є обов'язковим полем.
     :type email: EmailStr
+    
     :param phone: номер телефону контакту, який є обов'язковим полем.
     :type phone: str
+    
     :param birthday: дата народження контакту, яка є обов'язковим полем.
     :type birthday: date
+    
     :param extra_info: додаткова інформація про контакт, яка є необов'язковим полем.
     :type extra_info: str | None
+    
     """
     first_name: str
     last_name: str
@@ -35,23 +41,48 @@ class ContactCreate(ContactBase):
     використовується для валідації даних при створенні нового контакту. Вона не містить
     додаткових полів, але може бути розширена в майбутньому, якщо буде потрібно додати
     специфічні поля для процесу створення контакту.
+    
+    :return: Об'єкт :class:`src.schemas.ContactCreate`
+    :rtype: src.schemas.ContactCreate
+    
     """
     pass
 
 class ContactUpdate(ContactBase):
-    """ Схема для оновлення контакту, яка успадковує всі поля з ContactBase. Ця схема
-    використовується для валідації даних при оновленні існуючого контакту. """
+    """
+    Схема для оновлення контакту, яка успадковує всі поля з ContactBase. Ця схема
+    використовується для валідації даних при оновленні існуючого контакту.
+    
+    :return: Об'єкт :class:`src.schemas.ContactUpdate`
+    :rtype: src.schemas.ContactUpdate
+    
+    """
     pass
 
 class Contact(ContactBase):
-    """ Схема для представлення контакту, яка успадковує всі поля з ContactBase. Ця схема
-    використовується для відображення даних про контакт у відповідях API. """
+    """ 
+    Схема для представлення контакту, яка успадковує всі поля з ContactBase. Ця схема
+    використовується для відображення даних про контакт у відповідях API.
+    
+    :param id: унікальний ідентифікатор контакту, який є обов'язковим полем.
+    :type id: int
+    
+    :param user_id: ідентифікатор користувача, який створив контакт, який є обов'язковим полем.
+    :type user_id: int
+    
+    :return: Об'єкт :class:`src.schemas.Contact`
+    :rtype: src.schemas.Contact
+    
+    """
     id: int
     user_id: int
     class Config:
-        """ Конфігурація Pydantic, яка дозволяє створювати об'єкти Contact з атрибутів, а не
+        """
+        Конфігурація Pydantic, яка дозволяє створювати об'єкти Contact з атрибутів, а не
         лише з словників. Це корисно, коли дані надходять у вигляді об'єктів, наприклад, з бази
-        даних або інших джерел, де дані представлені як атрибути.  """
+        даних або інших джерел, де дані представлені як атрибути.
+        
+        """
         from_attributes = True
 
 class UserModel(BaseModel):
@@ -60,10 +91,13 @@ class UserModel(BaseModel):
     
     :param username: ім'я користувача, яке є обов'язковим полем.
     :type username: str
+    
     :param email: адреса електронної пошти користувача, яка є обов'язковим полем.
     :type email: EmailStr
+    
     :param password: пароль користувача, який є обов'язковим полем.
     :type password: str
+    
     """
     username: str
     email: EmailStr
@@ -78,16 +112,22 @@ class UserDb(BaseModel):
     
     :param id: унікальний ідентифікатор користувача, який є обов'язковим полем.
     :type id: int
+    
     :param username: ім'я користувача, яке є обов'язковим полем.
     :type username: str
+    
     :param email: адреса електронної пошти користувача, яка є обов'язковим полем.
     :type email: EmailStr
+    
     :param created_at: дата та час створення користувача, які є обов'язковим полем.
     :type created_at: datetime
+    
     :param avatar: адреса аватара користувача, яка є необов'язковим полем.
     :type avatar: str | None
+    
     :param confirmed: статус підтвердження користувача, який є обов'язковим полем.
     :type confirmed: bool
+    
     """
     id: int
     username: str
@@ -96,9 +136,12 @@ class UserDb(BaseModel):
     avatar: str | None
     confirmed: bool
     class Config:
-        """ Конфігурація Pydantic, яка дозволяє створювати об'єкти UserDb з атрибутів, а не лише з
+        """ 
+        Конфігурація Pydantic, яка дозволяє створювати об'єкти UserDb з атрибутів, а не лише з
         словників. Це корисно, коли дані надходять у вигляді об'єктів, наприклад, з бази даних або
-        інших джерел, де дані представлені як атрибути.  """
+        інших джерел, де дані представлені як атрибути.
+        
+        """
         from_attributes = True
 
 class UserResponse(BaseModel):
@@ -109,9 +152,11 @@ class UserResponse(BaseModel):
     користувача та підтвердження успішної операції.
     
     :param user: дані про створеного користувача, представлені у вигляді об'єкта UserDb.
-    :type user: UserDb
+    :type user: src.schemas.UserDb
+    
     :param detail: повідомлення про успішне створення користувача.
     :type detail: str
+    
     """
     user: UserDb
     detail: str = "User successfully created"
@@ -125,10 +170,13 @@ class TokenModel(BaseModel):
     
     :param access_token: токен доступу, який є обов'язковим полем.
     :type access_token: str
+    
     :param refresh_token: токен оновлення, який є обов'язковим полем.
     :type refresh_token: str
+    
     :param token_type: тип токена, який є обов'язковим полем.
     :type token_type: str
+    
     """
     access_token: str
     refresh_token: str
@@ -144,8 +192,10 @@ class UserLogin(BaseModel):
     
     :param email: адреса електронної пошти користувача, яка є обов'язковим полем.
     :type email: EmailStr
+    
     :param password: пароль користувача, який є обов'язковим полем.
     :type password: str
+    
     """
     email: EmailStr
     password: str
@@ -160,6 +210,7 @@ class RefreshRequest(BaseModel):
         
     :param refresh_token: токен оновлення, який є обов'язковим полем.
     :type refresh_token: str
+    
     """
     refresh_token: str
 
@@ -173,6 +224,7 @@ class RequestEmail(BaseModel):
     
      :param email: адреса електронної пошти користувача, на яку буде відправлено лист.
      :type email: EmailStr
+     
      """
     email: EmailStr
 
@@ -186,6 +238,7 @@ class ResetPasswordRequest(BaseModel):
     
     :param email: адреса електронної пошти користувача, на яку буде відправлено лист.
     :type email: EmailStr
+    
     """
     email: EmailStr
 
@@ -199,5 +252,6 @@ class ResetPasswordConfirm(BaseModel):
     
     :param new_password: новий пароль користувача.
     :type new_password: str
+    
     """
     new_password: str

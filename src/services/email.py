@@ -17,7 +17,7 @@ conf = ConnectionConfig(
     MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
     MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
     MAIL_FROM=os.getenv("MAIL_FROM"),
-    MAIL_PORT=int(os.getenv("MAIL_PORT")),
+    MAIL_PORT=int(os.getenv("MAIL_PORT","465")),
     MAIL_SERVER=os.getenv("MAIL_SERVER"),
     MAIL_FROM_NAME=os.getenv("MAIL_FROM_NAME"),
     MAIL_STARTTLS=False,
@@ -29,24 +29,24 @@ conf = ConnectionConfig(
 
 async def send_verification_email(email: EmailStr, username: str, host: str, token: str) -> None:
     """
-    Відправка листа з підтвердженням реєстрації. Ця функція формує лист з посиланням для
-    підтвердження реєстрації, яке містить JWT-токен для підтвердження email-адреси користувача.
-    Лист відправляється на вказану email-адресу користувача. У разі виникнення помилок при 
-    підключенні до поштового сервера, помилки будуть виведені у консоль для подальшого аналізу.
-    
-    
-    :param email: адреса електронної пошти користувача, на яку буде відправлено лист.
+    Відправка листа з підтвердженням реєстрації.
+    Формує HTML‑лист із посиланням для підтвердження email, що містить JWT‑токен.
+
+    :param email: Адреса електронної пошти користувача
     :type email: EmailStr
-    :param username: ім'я користувача, яке буде включено у вміст листа для персоналізації повідомлення.
+    
+    :param username: Ім'я користувача для персоналізації повідомлення
     :type username: str
-    :param host: базовий URL сервера, який буде використаний для формування посилання для підтвердження
-                реєстрації.
+    
+    :param host: Базовий URL сервера для формування посилання
     :type host: str
-    :param token: JWT-токен, який буде включений у посилання для підтвердження реєстрації, що дозволить
-                користувачу підтвердити свою email-адресу.
+    
+    :param token: JWT‑токен для підтвердження email
     :type token: str
+
     :return: None
     :rtype: None
+    
     """
     try:
         message = MessageSchema(
@@ -62,19 +62,18 @@ async def send_verification_email(email: EmailStr, username: str, host: str, tok
 
 async def send_reset_password_email(email: EmailStr, host: str, token: str) -> None:
     """
-    Відправка листа для скидання пароля. Ця функція формує лист з посиланням для скидання
-    пароля, яке містить JWT-токен для підтвердження права на скидання пароля. Лист відправляється
-    на вказану email-адресу користувача. У разі виникнення помилок при підключенні до поштового
-    сервера, помилки будуть виведені у консоль для подальшого аналізу.
+    Відправка листа для скидання пароля.
+    Формує HTML‑лист із посиланням для скидання пароля, що містить JWT‑токен.
+
+    :param email: Адреса електронної пошти користувача
+    :type email: EmailStr
     
-    :param email: адреса електронної пошти користувача, на яку буде відправлено лист.
-    :type email: EmailStr 
-    :param host: базовий URL сервера, який буде використаний для формування посилання для
-                скидання пароля.
+    :param host: Базовий URL сервера для формування посилання
     :type host: str
-    :param token:JWT-токен, який буде включений у посилання для скидання пароля, що дозволить
-                користувачу підтвердити право на скидання пароля.
+    
+    :param token: JWT‑токен для скидання пароля
     :type token: str
+
     :return: None
     :rtype: None
     """

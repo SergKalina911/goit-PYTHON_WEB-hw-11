@@ -26,6 +26,7 @@ def get_db() -> SessionLocal:
     
     :return: Сесія бази даних
     :rtype: SessionLocal
+    
     """
     db = SessionLocal()
     try:

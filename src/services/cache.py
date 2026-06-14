@@ -21,13 +21,17 @@ def cache_user(user, access_token: str, refresh_token: str) -> None:
     Значення: JSON з email, username, confirmed, токенами.
     
     :param user: Об'єкт користувача, який містить інформацію про користувача.
-    :type user: repository_users.User
+    :type user: src.database.models.User
+    
     :param access_token: JWT-токен для доступу.
     :type access_token: str
+    
     :param refresh_token: JWT-токен для оновлення access token.
     :type refresh_token: str
+    
     :return: None
     :rtype: None
+    
     """
     key = f"user:{user.id}"
     redis_client.set(key, json.dumps({
@@ -45,8 +49,10 @@ def get_cached_user(user_id: int) -> dict | None:
     
     :param user_id: ID користувача для отримання даних.
     :type user_id: int
+    
     :return: Дані користувача або None.
     :rtype: dict or None
+    
     """
     key = f"user:{user_id}"
     data = redis_client.get(key)

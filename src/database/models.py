@@ -12,22 +12,34 @@ class User(Base):
     зберігання інформації про користувача.
     
     __tablename__ = "users"
+    
     :param id: Унікальний ідентифікатор користувача
     :type id: int
+    
     :param username: Ім'я користувача
     :type username: str
+    
     :param email: Електронна пошта користувача, яка повинна бути унікальною
     :type email: str
+    
     :param password: Хешований пароль користувача
     :type password: str
+    
     :param created_at: Дата та час створення користувача, встановлюється автоматично
     :type created_at: datetime
+    
     :param avatar: URL аватара користувача, може бути null
     :type avatar: str or None
+    
     :param refresh_token: Токен для оновлення сесії користувача, може бути null
     :type refresh_token: str or None
+    
     :param confirmed: Чи підтвердив користувач свою електронну пошту, за замовчуванням False
     :type confirmed: bool
+    
+    :return: Об'єкт :class:`src.database.models.User`
+    :rtype: src.database.models.User
+    
     """
     __tablename__ = "users"
 
@@ -47,24 +59,36 @@ class Contact(Base):
     зберігання інформації про контакт.
     
     __tablename__ = "contacts"
+    
     :param id: Унікальний ідентифікатор контакту
     :type id: int
+    
     :param first_name: Ім'я контакту
     :type first_name: str
+    
     :param last_name: Прізвище контакту
     :type last_name: str
+    
     :param email: Електронна пошта контакту
     :type email: str
+    
     :param phone: Номер телефону контакту
     :type phone: str
+    
     :param birthday: Дата народження контакту
     :type birthday: date
+    
     :param extra_info: Додаткова інформація про контакт, може бути null
     :type extra_info: str or None
+    
     :param user_id: Ідентифікатор користувача, до якого належить контакт
     :type user_id: int
+    
     :param user: Зв'язок з моделлю User, який дозволяє отримувати інформацію про власника контакту
     :type user: User
+    
+    :return: Об'єкт :class:`src.database.models.Contact`
+    :rtype: src.database.models.Contact
     
     """
     __tablename__ = "contacts"

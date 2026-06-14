@@ -28,12 +28,16 @@ async def create_contact(body: ContactCreate,
     
     :param body: Дані для створення контакту.
     :type body: ContactCreate
+    
     :param db: Сесія бази даних.
     :type db: Session
+    
     :param user: Поточний авторизований користувач.
     :type user: User
+    
     :return: Створений контакт.
-    :rtype: Contact
+    :rtype: src.schemas.Contact
+    
     """
     return await repository_contacts.create_contact(db, body, user)
 
@@ -47,10 +51,13 @@ async def get_contacts(db: Session = Depends(get_db),
     
     :param db: Сесія бази даних.
     :type db: Session
+    
     :param user: Поточний авторизований користувач.
     :type user: User
+    
     :return: Список контактів.
-    :rtype: list[Contact]
+    :rtype: list[src.schemas.Contact]
+    
     """
     return await repository_contacts.get_contacts(db, user)
 
@@ -64,12 +71,16 @@ async def search_contacts(query: str,
     
     :param query: Рядок для пошуку.
     :type query: str
+    
     :param db: Сесія бази даних.
     :type db: Session
+    
     :param user: Поточний авторизований користувач.
     :type user: User
+    
     :return: Список контактів.
-    :rtype: list[Contact]
+    :rtype: list[src.schemas.Contact]
+    
     """
     return await repository_contacts.search_contacts(db, query, user)
 
@@ -82,10 +93,13 @@ async def upcoming_birthdays(db: Session = Depends(get_db),
     
     :param db: Сесія бази даних.
     :type db: Session
+    
     :param user: Поточний авторизований користувач.
     :type user: User
+    
     :return: Список контактів.
-    :rtype: list[Contact]
+    :rtype: list[src.schemas.Contact]
+    
     """
     return await repository_contacts.upcoming_birthdays(db, user)
 
@@ -100,12 +114,16 @@ async def get_contact(contact_id: int,
 
     :param contact_id: ID контакту.
     :type contact_id: int
+    
     :param db: Сесія бази даних.
     :type db: Session
+    
     :param user: Поточний авторизований користувач.
     :type user: User
+    
     :return: Контакт.
-    :rtype: Contact
+    :rtype: src.schemas.Contact
+    
     """
     contact = await repository_contacts.get_contact(db, contact_id, user)
     if not contact:
@@ -122,14 +140,19 @@ async def update_contact(contact_id: int,
 
     :param contact_id: ID контакту.
     :type contact_id: int
+    
     :param body: Дані для оновлення контакту.
     :type body: ContactUpdate
+    
     :param db: Сесія бази даних.
     :type db: Session
+    
     :param user: Поточний авторизований користувач.
     :type user: User
+    
     :return: Оновлений контакт.
-    :rtype: Contact
+    :rtype: src.schemas.Contact
+    
     """
     contact = await repository_contacts.update_contact(db, contact_id, body, user)
     if not contact:
@@ -145,12 +168,16 @@ async def delete_contact(contact_id: int,
 
     :param contact_id: ID контакту.
     :type contact_id: int
+    
     :param db: Сесія бази даних.
     :type db: Session
+    
     :param user: Поточний авторизований користувач.
     :type user: User
+    
     :return: Повідомлення про успішне видалення.
     :rtype: dict
+    
     """
     contact = await repository_contacts.delete_contact(db, contact_id, user)
     if not contact:

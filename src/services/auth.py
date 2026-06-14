@@ -13,12 +13,14 @@ from src.database.db import get_db
 from src.repository import users as repository_users
 
 class Auth:
-    """ Клас для аутентифікації користувачів. Тут ми реалізуємо функції для хешування паролів,
-    створення та декодування JWT-токенів, а також отримання поточного користувача на основі
-    токена. Ми використовуємо бібліотеку passlib для безпечного хешування паролів та jose для
-    роботи з JWT. Клас також містить методи для створення токенів підтвердження email та
-    скидання пароля.  Цей сервіс є ключовим компонентом для забезпечення безпеки та управління
-    доступом у нашому додатку.  """
+    """ 
+    Клас для аутентифікації користувачів. Реалізує:
+    - хешування паролів
+    - створення та декодування JWT‑токенів
+    - отримання поточного користувача
+    - створення токенів для підтвердження email та скидання пароля
+    
+    """
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     SECRET_KEY = os.getenv("SECRET_KEY")
@@ -32,20 +34,26 @@ class Auth:
         
         :param plain_password: Введений користувачем пароль.
         :type plain_password: str
+        
         :param hashed_password: Захешований пароль, збережений у базі даних.
         :type hashed_password: str
+        
         :return: True, якщо паролі співпадають, інакше False.
         :rtype: bool
+        
         """
         return self.pwd_context.verify(plain_password, hashed_password)
 
     def get_password_hash(self, password: str) -> str:
         """ 
         Хешування пароля перед збереженням у базі даних. 
+        
         :param password: Пароль, який потрібно захешувати.
         :type password: str
+        
         :return: Захешований пароль.
         :rtype: str
+        
         """
         return self.pwd_context.hash(password)
 
@@ -56,10 +64,13 @@ class Auth:
         
         :param data: Дані для кодування в токен.
         :type data: dict
+        
         :param expires_delta: Час дії токена в хвилинах.
         :type expires_delta: Optional[int]
+        
         :return: JWT-токен.
         :rtype: str
+        
         """
         expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 15))
         expire = datetime.utcnow() + timedelta(minutes=expire_minutes)
@@ -74,8 +85,10 @@ class Auth:
         
         :param data: Дані для кодування в токен.
         :type data: dict
+        
         :param expires_delta: Час дії токена в днях.
         :type expires_delta: Optional[int]
+        
         :return: JWT-токен.
         :rtype: str
         """
@@ -92,8 +105,10 @@ class Auth:
         
         :param refresh_token: JWT-токен для оновлення access token.
         :type refresh_token: str
+        
         :return: ID користувача.
         :rtype: str
+        
         """
         payload = jwt.decode(refresh_token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
         if payload.get("scope") != "refresh_token":
@@ -113,10 +128,13 @@ class Auth:
         
         :param credentials: Об'єкт, що містить JWT-токен з заголовка Authorization.
         :type credentials: HTTPAuthorizationCredentials
+        
         :param db: Сесія бази даних.
         :type db: Session
+        
         :return: Поточний користувач.
-        :rtype: repository_users.User
+        :rtype: src.database.models.User
+        
         """
         try:
             payload = jwt.decode(credentials.credentials, self.SECRET_KEY,
@@ -144,8 +162,10 @@ class Auth:
         
         :param data: Дані для кодування в токен (зазвичай містить email користувача).
         :type data: dict
+        
         :return: JWT-токен для підтвердження email.
         :rtype: str
+        
         """
         expire = datetime.utcnow() + timedelta(days=7)
         to_encode = {**data, "iat": datetime.utcnow(), "exp": expire}
@@ -159,8 +179,10 @@ class Auth:
         
         :param token: JWT-токен для підтвердження email.
         :type token: str
+        
         :return: Email користувача або None.
         :rtype: str or None
+        
         """
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
@@ -176,8 +198,10 @@ class Auth:
                 
         :param email: Email користувача, для якого створюється токен.
         :type email: str
+        
         :return: JWT-токен для скидання пароля.
         :rtype: str
+        
         """
         expire = datetime.utcnow() + timedelta(minutes=30)
         to_encode = {"sub": email, "exp": expire, "scope": "reset_password"}
@@ -192,8 +216,10 @@ class Auth:
         
         :param token: JWT-токен для скидання пароля.
         :type token: str
+        
         :return: Email користувача або None.
         :rtype: str or None
+        
         """
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
