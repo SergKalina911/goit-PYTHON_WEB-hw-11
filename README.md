@@ -105,6 +105,8 @@ POST /api/auth/signup — реєстрація
 
 POST /api/auth/login — логін, повертає access_token та refresh_token
 
+POST /api/auth/check — перевірка авторизації
+
 GET /api/auth/refresh_token — оновлення токенів
 
 POST /api/auth/reset-password-request — запит на скидання паролю

@@ -1,29 +1,4 @@
-# services:
-#   db:
-#     image: postgres:15
-#     container_name: contacts_postgres
-#     restart: always
-#     environment:
-#       POSTGRES_DB: contacts_db
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: mysecretpassword
-#     ports:
-#       - "5432:5432"
-#     volumes:
-#       - postgres_data:/var/lib/postgresql/data
 
-#   web:
-#     build: .
-#     container_name: contacts_api
-#     restart: always
-#     env_file: .env
-#     ports:
-#       - "8000:8000"
-#     depends_on:
-#       - db
-
-# volumes:
-#   postgres_data:
 services:
   db:
     image: postgres:15
