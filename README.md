@@ -1,14 +1,16 @@
 # goit-PYTHON_WEB-hw-11
-Домашнє завдання №11,12,13 — Contacts REST API з JWT
+Домашнє завдання №11,12,13,14 — Contacts REST API з JWT
 
 ---
-## 📌 Опис
+## 📌📌 Опис
 REST API для роботи з контактами та користувачами. Реалізовано:
-- Реєстрація та підтвердження email
-- Авторизація з JWT токенами (access/refresh)
-- Скидання паролю через email‑токен
-- Кешування поточного користувача у Redis
-- Документація доступна у Swagger UI (`/docs`)
+Реєстрація та підтвердження email
+Авторизація з JWT токенами (access/refresh)
+Скидання паролю через email‑токен
+Кешування поточного користувача у Redis
+Документація доступна у Swagger UI (/docs)
+Модульні та функціональні тести
+Документація коду (Sphinx)
 
 ---
 
@@ -20,42 +22,56 @@ REST API для роботи з контактами та користувача
 - **Redis** (кешування користувача)
 - **Docker + docker-compose**
 - **Poetry** (керування залежностями)
+- **Sphinx**(документація коду)
+- **Pytest**(тестування застосунку)
 
 ---
-
-## 📂 Структура проекту
-
 ```text
 goit-PYTHON_WEB-hw-11/
-├── alembic/                # Міграції бази даних
-│   ├── versions/           # Автогенеровані файли міграцій
-│   └── env.py              # Налаштування Alembic
-├── src/
+├── alembic/                        # Міграції бази даних
+│   ├── versions/                   # Автогенеровані файли міграцій
+│   └── env.py                      # Налаштування Alembic
+├── docs/                           # Автогенерована документація Sphinx
+│   ├── index.rst                   # Головна сторінка документації
+│   ├── conf.py                     # Конфіг Sphinx
+│   └── _build/                     # Згенеровані HTML-файли
+├── src/                            # Основний код застосунку
 │   ├── database/
-│   │   ├── db.py           # Підключення до БД (engine, SessionLocal, Base)
-│   │   └── models.py       # SQLAlchemy моделі (Contact, User)
+│   │   ├── db.py                   # Підключення до БД (engine, SessionLocal, Base)
+│   │   └── models.py               # SQLAlchemy моделі (Contact, User)
 │   ├── routes/
-│   │   ├── auth.py         # signup, login, refresh_token, reset-password
-│   │   ├── users.py        # CRUD для користувачів
-│   │   └── contacts.py     # CRUD ендпоінти для контактів (з user_id)
-│   ├── schemas.py          # Pydantic-схеми для валідації
+│   │   ├── auth.py                 # signup, login, refresh_token, reset-password
+│   │   ├── users.py                # Завантаження аватарів, робота з користувачами
+│   │   └── contacts.py             # CRUD ендпоінти для контактів (з user_id)
+│   ├── schemas.py                  # Pydantic-схеми для валідації
 │   ├── repository/
-│   │   ├── users.py        # Робота з користувачами
-│   │   └── contacts.py     # CRUD для контактів
+│   │   ├── users.py                # Робота з користувачами
+│   │   └── contacts.py             # CRUD для контактів
 │   ├── services/
-│   │   ├── templates/      # Шаблони листів (HTML)
-│   │   ├── cache.py        # Кешування користувача у Redis
-│   │   ├── email.py        # Відправка email (SMTP)
-│   │   └── auth.py         # Auth‑сервіс (JWT, bcrypt)
-├── main.py                 # Точка входу FastAPI, підключення роутів
-├── pyproject.toml          # Poetry залежності
-├── alembic.ini             # Конфіг Alembic
-├── docker-compose.yml      # Сервіси: db (Postgres), web (FastAPI), redis
-├── Dockerfile              # Збірка образу FastAPI
-├── example_contacts.txt    # Приклади контактів для тесту
-├── example_users.txt       # Приклади користувачів для тесту
-└── .env.example            # Змінні середовища (приклад)
-
+│   │   ├── templates/              # Шаблони листів (HTML)
+│   │   ├── cache.py                # Кешування користувача у Redis
+│   │   ├── email.py                # Відправка email (SMTP, FastAPI-Mail)
+│   │   └── auth.py                 # Auth‑сервіс (JWT, bcrypt)
+├── tests/                          # Юніт- та функціональні тести
+│   ├── conftest.py                 # Конфігураційний файл для pytest
+│   ├── test_unit_repository_users.py           # Юніт-тести для репозиторія користувачів
+│   ├── test_unit_repository_contacts.py        # Юніт-тести для репозиторія контактів
+│   ├── test_unit_routes_users.py               # Юніт-тести для маршруту /users/avatar
+│   ├── test_unit_services_auth.py              # Юніт-тести для Auth‑сервісу
+│   ├── test_unit_services_email.py             # Юніт-тести для email‑сервісу
+│   └── test_functional_auth_and_contacts.py    # Функціональний тест (signup → confirm → login → CRUD)
+├── main.py                         # Точка входу FastAPI, підключення роутів
+├── pyproject.toml                  # Poetry залежності
+├── alembic.ini                     # Конфіг Alembic
+├── Dockerfile                      # Збірка образу FastAPI
+├── docker-compose.yml              # Сервіси: db (Postgres), web (FastAPI), redis, mailhog
+├── docker-compose.override.yml     # Конфіг для тестування
+├── Makefile                        # Зручні команди для Docker, міграцій, тестів
+├── example_contacts.txt            # Приклади контактів для тесту
+├── example_users.txt               # Приклади користувачів для тесту
+├── .env.example                    # Змінні середовища (приклад)
+├── .env.test                       # Змінні середовища для тестування
+└── README.md                       # Документація проєкту
 ```
 ---
 ## 🔑 Налаштування .env
@@ -72,32 +88,101 @@ goit-PYTHON_WEB-hw-11/
 У Docker: треба залишати POSTGRES_HOST=db, бо це ім’я сервісу з docker-compose.yml.
 
 Поза Docker (наприклад, для Alembic‑міграцій з Windows): треба міняти на POSTGRES_HOST=localhost, бо ззовні контейнера база доступна через localhost:5432.
+4. Виконувати тестування треба за допомогою .env.test та docker-compose.override.yml
+
+🔹Чому два середовища?
+У проєкті використовується два оточення:
+
+- Production (робоче)  
+Використовує docker-compose.yml + .env. Тут налаштовані реальні сервіси: PostgreSQL, Redis, SMTP (Meta.ua).
+Це середовище для реальної роботи застосунку.
+
+- Test (тестове)  
+Використовує docker-compose.override.yml + .env.test. Тут замінено поштову службу на MailHog, щоб перехоплювати листи без реальної відправки.
+Це середовище для запуску тестів і перевірки функціоналу без ризику надсилання справжніх email.
+
+🔹Чому змінили поштову службу?
+- У робочому середовищі використовується реальний SMTP (Meta.ua).
+- У тестовому — MailHog, щоб бачити всі листи локально в браузері (http://localhost:8025) і не відправляти їх назовні.
+Це дозволяє безпечно тестувати підтвердження email та reset‑password.
 
 ---
 
-## 🚀 Повний робочий цикл
-1. Створити .env на основі .env.example.
-2. Запустити Docker: 
+## 🚀 Повний робочий цикл 
+1. Скопіюй .env.example → створи .env та .env.test.
+
+2. Запусти потрібне середовище:
+
+Робоче:
 ```bash
-    ddocker compose up --build
+docker-compose up -d --build
 ```
-3. Виконати міграції (якщо треба з Windows‑хоста):
+Тестове:
+
 ```bash
-cp .env.local .env
-alembic revision --autogenerate -m "init"
-alembic upgrade head
+docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d --build
 ```
-4. Повернути .env.docker для роботи контейнерів:
+
+3. Виконати міграції:
 ```bash
-cp .env.docker .env
-docker compose up
+docker-compose exec web poetry run alembic upgrade head
 ```
+
+Створити нову ревізію Alembic:
+```bash
+docker-compose exec web poetry run alembic revision --autogenerate -m "$(msg)"
+```
+
+Запустити всі тести:
+```bash
+docker-compose -f docker-compose.override.yml exec web poetry run pytest -v
+
+```
+
+Запустити конкретний тест(наприклад функціональний):
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.override.yml exec web poetry run pytest tests/test_functional_auth_and_contacts.py -v
+```
+
+Запустити всі тести з перевіркою покриття (ЗАРАЗ ПОКРИТТЯ СТАНОВИТЬ 96%):
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.override.yml exec web poetry run pytest --cov=src --cov-report=term-missing -v
+```
+## 🛠️ Запуск і тестування через Makefile(якщо так зручніше):
+    Основні команди:
+```bash
+    make up         # Підняти всі сервіси (Postgres, Redis, web)
+    make down       # Зупинити всі сервіси
+    make run        # Запустити застосунок (web) без тестів
+    make logs       # Переглянути логи контейнера web
+
+```
+    Міграції:
+```bash
+    make migrate                # Виконати всі міграції Alembic
+    make revision msg="new table"   # Створити нову ревізію міграції
+```
+    Тести:
+```bash
+    make tests                  # Запустити всі тести (без покриття)
+    make coverage               # Запустити всі тести з покриттям (зараз 96%)
+    make testfile file=tests/test_unit_services_auth.py   # Запустити конкретний файл
+
+```    
 ---
 ## 📖 Документація API
 
 Swagger UI → http://localhost:8000/docs
 
 Redoc → http://localhost:8000/redoc
+
+
+## 📖 Документація (папка docs/)
+Згенерувати HTML‑документацію 
+```bash
+sphinx-build -b html docs docs/_build
+```
+та дивитись docs/_build/index.html у браузері.
 
 ---
 ## 🔑 Авторизація
@@ -151,21 +236,14 @@ POST /api/auth/reset-password/{token} — скидання паролю
 TTL: 3600 секунд (1 година)
 
 ---
-## 📊 Таблиця ендпоінтів
-```text
-| Маршрут                     | Метод  | Статус       | Опис                                                           |
-| ---                         | ---    | ---          | ---                                                            |       
-| ``/api/auth/signup``        | POST   | 201 Created  | Реєстрація нового користувача. Перевірка унікальності email.   |
-| ``/api/auth/login``         | POST   | 200 OK       | Логін користувача. Повертає ``access_token``+``refresh_token`` |
-| ``/api/auth/refresh_token`` | GET    | 200 OK       | Оновлення токенів. Повертає нову пару токенів.                 |
-| ``/api/contacts``           | POST   | 201 Created  | Створення нового контакту (лише для авторизованого користувача)|
-| ``/api/contacts``           | GET    | 200 OK       | Отримання списку контактів поточного користувача.              |
-| ``/api/contacts/{id}``      | GET    | 200 OK / 404 | Отримання контакту за ID.                                      |
-| ``/api/contacts/{id}``      | PUT    | 200 OK / 404 | Оновлення контакту за ID.                                      |
-| ``/api/contacts/{id}``      | DELETE | 200 OK / 404 | Видалення контакту за ID.                                      |
-| ``/api/contacts/search``    | GET    | 200 OK       | Пошук контактів за ім’ям, прізвищем або email.                 |
-| ``/api/contacts/birthdays`` | GET    | 200 OK       | Список контактів з днями народження у найближчі 7 днів.        |
-```
+## ✨ Переваги підходу
+- Відокремлені середовища: продакшн і тест не конфліктують.
+
+- Безпечне тестування пошти: MailHog дозволяє бачити всі листи без реальної відправки.
+
+- Гнучкість: легко перемикатися між робочим і тестовим режимом.
+
+- Прозорість : .env.example показує всі потрібні змінні, але без реальних секретів.
 ---
 
 ## Оригінал завдання
@@ -243,4 +321,19 @@ API повинен мати можливість виконувати насту
 
 - Реалізуйте механізм кешування за допомогою бази даних Redis. Виконайте кешування поточного користувача під час авторизації;
 - Реалізуйте механізм скидання паролю для застосунку REST API;
+
+### Домашнє завдання #14
+
+У цьому домашньому завданні ми продовжуємо доопрацьовувати наш REST API застосунок із домашнього завдання 13.
+
+#### Завдання
+
+- За допомогою Sphinx створіть документацію для вашого домашнього завдання. Для цього додайте в основних модулях до необхідних функцій і методів класів рядки docstrings.
+- Покрийте модульними тестами модулі репозиторію домашнього завдання, використовуючи фреймворк Unittest. За основу візьміть приклад із конспекту для модуля tests/test_unit_repository_notes.py
+- Покрийте функціональними тестами будь-який маршрут на вибір з вашого домашнього завдання, використовуючи фреймворк pytest.
+
+#### Додаткове завдання
+
+Покрийте ваше домашнє завдання тестами більш ніж на 95%. Для контролю використовуйте пакет pytest-cov
+
 ---

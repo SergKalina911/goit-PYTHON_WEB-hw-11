@@ -1,0 +1,16 @@
+services:
+  db:
+    env_file:
+      - .env.test
+
+  redis:
+    env_file:
+      - .env.test
+
+  web:
+    env_file:
+      - .env.test
+
+  mailhog:
+    env_file:
+      - .env.test

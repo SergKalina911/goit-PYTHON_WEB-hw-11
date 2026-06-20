@@ -29,6 +29,15 @@ services:
     depends_on:
       - db
       - redis
+      - mailhog   # ✅ тепер залежить від поштового сервера
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: contacts_mailhog
+    restart: always
+    ports:
+      - "1025:1025"   # SMTP порт
+      - "8025:8025"   # Веб-інтерфейс MailHog
 
 volumes:
   postgres_data:

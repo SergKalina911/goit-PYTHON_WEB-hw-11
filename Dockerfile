@@ -13,4 +13,7 @@ COPY ./main.py ./main.py
 COPY alembic.ini .
 COPY alembic alembic
 
+# Копіюємо тести
+COPY ./tests ./tests
+
 CMD ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
